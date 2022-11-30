@@ -9,13 +9,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class BasicController {
-    @GetMapping("/api/hello1")
+    @GetMapping("/api/login")
     public String hello1() {
         return "hello";
     }
 
-    @GetMapping("/api/hello2")
+    @GetMapping("/api/logout")
     public String hello2(@RequestParam String param) {
         return param;
     }
+
+
+
 }
