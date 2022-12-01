@@ -1,11 +1,30 @@
 package com.example.datahubwebsite.Models.DTO;
 
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
+
+@Builder
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Password {
     private int password_id;
     private int user_no;
     private String password;
     private String nickname;
     private String updateAt;
+
+    public Password(int password_id, int user_no , String password, String nickname){
+        this.password_id = password_id;
+        this.user_no = user_no;
+        this.password = password;
+        this.nickname = nickname;
+    }
 
     public int getPassword_id() {
         return password_id;
