@@ -34,6 +34,14 @@ public class UserDao {
 
         return user;
     }
+    public User readbyToken(String Token){// test 완료
+
+        String sql = "select * from `Member.user` WHERE user_no = ?";
+
+        User user = jdbcTemplate.queryForObject(sql, new UserMapper(), Token);
+
+        return user;
+    }
 
     public void updatebyUserNo(User user){// test 미완료
 
