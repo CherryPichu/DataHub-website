@@ -26,35 +26,4 @@ public class User {
         this.token = token;
     }
 
-//    public String getUser_name() {
-//        return user_name;
-//    }
-//
-//    public void setUser_name(String user_name) {
-//        this.user_name = user_name;
-//    }
-//
-//    public int getLogin_type() {
-//        return login_type;
-//    }
-//
-//    public void setLogin_type(int login_type) {
-//        this.login_type = login_type;
-//    }
-//
-//    public int getUser_no() {
-//        return user_no;
-//    }
-//
-//    public void setUser_no(int user_no) {
-//        this.user_no = user_no;
-//    }
-//
-//    public String getToken() {
-//        return token;
-//    }
-//
-//    public void setToken(String token) {
-//        this.token = token;
-//    }
 }
