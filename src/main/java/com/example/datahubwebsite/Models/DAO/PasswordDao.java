@@ -20,7 +20,7 @@ public class PasswordDao {
 
     public void create(Password password){ // test 완료
 
-        String sql = "Insert Into `Auth.password` (user_no, password, nickname) values (?,?,?,?)";
+        String sql = "Insert Into `Auth.password` (user_no, password, nickname) values (?,?,?)";
 
         jdbcTemplate.update(sql, password.getUser_no(), password.getPassword(), password.getNickname());
 
@@ -35,6 +35,18 @@ public class PasswordDao {
 
         return password;
     }
+
+    public Password readbyNickName(String NickName){// test 완료
+
+        String sql = "select * from `Auth.password` WHERE nickname = ?";
+
+        Password password = jdbcTemplate.queryForObject(sql, new PasswordMapper(), NickName);
+
+
+
+        return password;
+    }
+
 
     public void updatebyUserNo(Password password){// test 미완료
 

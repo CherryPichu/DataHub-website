@@ -3,6 +3,7 @@ package com.example.datahubwebsite.config;
 import jdk.jfr.Enabled;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.config.annotation.*;
 import springfox.documentation.builders.ApiInfoBuilder;
@@ -72,6 +73,13 @@ public class SwaggerConfiguration implements WebMvcConfigurer {
         registry.addResourceHandler("/api/swagger-ui.html**").addResourceLocations("classpath:/META-INF/resources/swagger-ui.html");
         registry.addResourceHandler("/api/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
     }
-
+    @Bean
+    public ResourceBundleMessageSource translator() {
+        ResourceBundleMessageSource source = new ResourceBundleMessageSource();
+        source.setBasenames("swagger-message");
+        source.setUseCodeAsDefaultMessage(true);
+        source.setDefaultEncoding("utf-8");
+        return source;
+    }
 
 }

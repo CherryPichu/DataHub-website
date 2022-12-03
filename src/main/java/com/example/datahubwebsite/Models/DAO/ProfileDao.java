@@ -20,9 +20,9 @@ public class ProfileDao {
 
     public void create(Profile profile){ // test 완료
 
-        String sql = "Insert Into `Member.profile` (user_no, nickname, email, sex) values (?,?,?)";
+        String sql = "Insert Into `Member.profile` (user_no, nickname, email, sex) values (?,?,?, ?)";
 
-        jdbcTemplate.update(sql, profile.getUser_no(), profile.getNickname(), profile.getNickname(), profile.getEmail(), profile.getSex());
+        jdbcTemplate.update(sql, profile.getUser_no(), profile.getNickname(), profile.getEmail(), profile.getSex());
 
 
     }

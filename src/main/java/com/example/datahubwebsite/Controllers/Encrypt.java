@@ -1,7 +1,5 @@
 package com.example.datahubwebsite.Controllers;
 
-import lombok.Builder;
-import org.springframework.boot.context.properties.bind.DefaultValue;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -26,7 +24,7 @@ public class Encrypt{
     }
 
     /**
-     * 해쉬화된 암호 흭득
+     * Function 암호화 (pwd + salt)
      * @param pwd 암호
      * @param salt getSalt();
      * @return SHA-256 알고리즘으로 암호화된 pwd

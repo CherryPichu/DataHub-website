@@ -36,7 +36,7 @@ public class UserDao {
     }
     public User readbyToken(String Token){// test 완료
 
-        String sql = "select * from `Member.user` WHERE user_no = ?";
+        String sql = "select * from `Member.user` WHERE token = ?";
 
         User user = jdbcTemplate.queryForObject(sql, new UserMapper(), Token);
 

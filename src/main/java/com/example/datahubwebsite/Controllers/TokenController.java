@@ -21,7 +21,7 @@ public class TokenController {
     //==토큰 생성 메소드==//
     public static String createToken(String subject) {
         Date now = new Date();
-        Date expiration = new Date(now.getTime() + Duration.ofDays(1).toMillis()); // 만료기간 1일
+        Date expiration = new Date(now.getTime() + Duration.ofDays(365).toMillis()); // 만료기간 1년
 
         return Jwts.builder()
                 .setHeaderParam(Header.TYPE, Header.JWT_TYPE) // (1)

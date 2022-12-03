@@ -20,8 +20,7 @@ public class UserDaoTests {
 //        User user = new User("namjung",0,"");
         String test = TokenController.createToken("test");
         System.out.println( test );
-        TokenController.parseJwtToken(test);
-
+//        TokenController.parseJwtToken(test);
 
     }
 
