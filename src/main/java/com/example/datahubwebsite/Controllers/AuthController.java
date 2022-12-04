@@ -119,11 +119,9 @@ public class AuthController {
         HttpSession session = request.getSession();
 
 
-//        System.out.println(nickname);
         Password auth = passworddb.readbyNickName(nickname);
 
         if( BCrypt.checkpw(password, auth.getPassword()) ){
-
             session.setAttribute("user_no", auth.getUser_no());  // 세션 저장하기
             return "sucess";
         }
@@ -160,6 +158,18 @@ public class AuthController {
 
     }
 
+    @GetMapping(value = "/getuserJson")
+    public User getuserJson(HttpServletRequest request){
+        HttpSession session = request.getSession();
 
+        if( session.getAttribute("user_no") != null){
+            return  userdb.readbyUserNo((Integer) session.getAttribute("user_no"));
+        }else {
+            User errUser = new User("null", 0, -1, "");
+
+            return errUser;
+        }
+
+    }
 }
 

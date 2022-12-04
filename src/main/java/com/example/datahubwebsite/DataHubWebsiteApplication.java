@@ -8,6 +8,8 @@ public class DataHubWebsiteApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(DataHubWebsiteApplication.class, args);
+
+
     }
 
 }

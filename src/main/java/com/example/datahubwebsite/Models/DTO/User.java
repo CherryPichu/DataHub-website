@@ -1,5 +1,7 @@
 package com.example.datahubwebsite.Models.DTO;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.*;
 
 @Builder
@@ -8,6 +10,7 @@ import lombok.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonNaming(value = PropertyNamingStrategy.SnakeCaseStrategy.class) // JSON print를 위해서 사용
 public class User {
     private String user_name;
     private int login_type;
