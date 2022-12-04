@@ -39,7 +39,7 @@ public class UserDao {
         String sql = "select * from `Member.user` WHERE token = ?";
 
         User user = jdbcTemplate.queryForObject(sql, new UserMapper(), Token);
-
+        System.out.println(user.getUser_no());
         return user;
     }
 

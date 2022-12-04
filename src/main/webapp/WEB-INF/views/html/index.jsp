@@ -160,15 +160,15 @@
 
 <div id="map">
 </div>
-<%--<div class="account">--%>
-<%--    <span style="float:left;" class="name">--%>
-<%--        <i class="fa-solid fa-user-graduate"></i>박현 « 관리자 »--%>
-<%--    </span>--%>
-<%--    <span style="float:right;">--%>
-<%--        <i class="fa-solid fa-landmark"></i>한림대학교&nbsp;&nbsp;--%>
+<div class="account">
+    <span style="float:left;" class="name">
+        <i class="fa-solid fa-user-graduate"></i>아이디 : <span id="nickname">null</span>
+    </span>
+    <span style="float:right;">
+        <i class="fa-solid fa-landmark"></i>춘천시&nbsp;&nbsp;
 <%--        <i class="fa-solid fa-table"></i>5건&nbsp;--%>
-<%--    </span>--%>
-<%--</div>--%>
+    </span>
+</div>
 <%--<div class="data">--%>
 <%--    <div class="title" style="font-weight: bold">지역 기반 데이터 클라우드 서비스</div>--%>
 <%--    <br>--%>
@@ -177,7 +177,12 @@
 <%--    <b style="padding-right: 4px">등록일:</b>2022-05-05<br>--%>
 <%--    <hr>--%>
 <%--</div>--%>
+<div class="data">
+    <div class="title" style="font-weight: bold">로그인</div>
+    <b style="padding-right: 4px">작성자:</b>--%>
 
+    </div>
+</div>
 </body>
 
 </html>

@@ -22,6 +22,9 @@ https://victorydntmd.tistory.com/35
 https://recordsoflife.tistory.com/501
 
 
+### DTO -> json 반환
+https://inseok9068.github.io/java/java-snake-case/
+
 ## 포런트
 박현이 많은 준비를 해줬습니다. 감사합니다.  
 leaflet api   
