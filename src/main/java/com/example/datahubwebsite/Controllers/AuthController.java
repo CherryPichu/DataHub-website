@@ -63,7 +63,16 @@ public class AuthController {
 
 
         HttpSession session = request.getSession();
-        
+        System.out.println("파이널컷1");
+
+        /**
+         * 중복되는 아이디가 있는지 확인
+         */
+        if(passworddb.readbyNickName(AuthNickname) != null){
+            return "error 아이디 중복";
+        };
+
+        System.out.println("파이널컷2");
 
         // 토큰 생성
         String token = TokenController.createToken("사용자인증토큰");
@@ -73,7 +82,7 @@ public class AuthController {
          */
         User user = new User(user_name, 0, token);
         userdb.create(user);
-
+        System.out.println("파이널컷3");
         user = userdb.readbyToken(token); // 만들어진 유저 정보를 가져옴
         int uesr_no = user.getUser_no();
         /**
@@ -85,7 +94,7 @@ public class AuthController {
         // 세션에 user_no 저장
         session.setAttribute("user_no",user.getUser_no());
 
-
+        System.out.println("파이널컷4");
         /**
          * Auth.password 테이블에 새로운 유저 넣음.
          */
@@ -121,6 +130,9 @@ public class AuthController {
 
         Password auth = passworddb.readbyNickName(nickname);
 
+        if(auth == null){
+            throw new ForbiddenException();
+        }
         if( BCrypt.checkpw(password, auth.getPassword()) ){
             session.setAttribute("user_no", auth.getUser_no());  // 세션 저장하기
             return "sucess";
@@ -146,6 +158,9 @@ public class AuthController {
     }
 
 
+    /**
+     * 세션으로 유저번호(user_no) 조회
+     */
     @GetMapping(value = "/getuser_no")
     public String getUser_no(HttpServletRequest request){
         HttpSession session = request.getSession();
@@ -169,6 +184,22 @@ public class AuthController {
 
             return errUser;
         }
+    }
+
+    /**
+     * 아이디 중복 검사
+     * @param request
+     * @param nickname 중복 검사 대상 아이디 / targeted ID
+     */
+    @PostMapping(value = "/CheckedDuplicatedId")
+    public String CheckedDuplicatedId(HttpServletRequest request, @RequestParam(value = "id") String nickname){
+        HttpSession session = request.getSession();
+
+        if(passworddb.readbyNickName(nickname) ==  null){
+            return "yes";
+        }
+
+        return "null";
 
     }
 }

@@ -58,6 +58,26 @@ body {
     position: absolute;
 }
 
+
 .account > span > .fa-solid {
     padding-right: 8px;
+}
+
+.signup{
+    --width: 700px;
+    --height: 430px;
+    --padding-horizontal: 20px;
+    z-index: 300;
+    padding-left: var(--padding-horizontal);
+    padding-right: var(--padding-horizontal);
+    width: var(--width);
+    height: var(--height);
+    top: calc(50% - var(--height) / 2);
+    left: calc(50% - var(--width) / 2 - var(--padding-horizontal));
+    background-color: rgba(255, 255, 255, 0.85);
+    position: absolute;
+}
+.signup th, .signup td {
+    padding-left: 5px;
+    padding-top: 6px;
 }

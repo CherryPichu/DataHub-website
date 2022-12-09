@@ -1,5 +1,10 @@
 <!DOCTYPE html>
+
 <html lang="en">
+<%--Jquery 라이브러리--%>
+<script src="http://code.jquery.com/jquery-1.11.2.min.js"></script>
+<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%--부트스트랩 적용!--%>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
@@ -70,11 +75,7 @@
 
             map.on('contextmenu', function (e) {
                 let location = e.latlng
-
-                console.log(e.latlng) // 좌표
-                // ex) {lat: 37.88501530712817, lng: 127.72404670715333}
-
-
+                console.log(location)
 
                 with (location) {
                     let popup = L.popup()
@@ -82,7 +83,7 @@
                         .setContent(`
                             <div class="upload-popup">
                                 <i class="fa-solid fa-compass"></i>&nbsp;&nbsp;
-                                위도: ${lat.toFixed(6)}, 경도: ${lng.toFixed(6)}<br>
+                                위도: `+ lat.toFixed(6) + `, 경도: `+ lng.toFixed(6)+ `,<br>
                                 <i class="fa-solid fa-table"></i>&nbsp;&nbsp;
                                 <a href="javascript:upload(location);">데이터를 업로드하려면 클릭하세요.</a>
                             </div>
@@ -92,8 +93,6 @@
             });
             // upload(null)
 
-
-
         }
     </script>
 
@@ -102,7 +101,7 @@
     </style>
 </head>
 
-<body>
+<body id="#body">
 
 <%--맵 구성--%>
 <div id="map">
@@ -110,8 +109,6 @@
 
 </div>
 
-
-"""
 <div class="account">
     <span style="float:left;" class="name">
         <i class="fa-solid fa-user-graduate"></i>아이디 : <span id="nickname">null</span>
@@ -123,60 +120,61 @@
 </div>
 
 
-
+<%--로그인페이지--%>
 <div class="data" id="mainpage" style=" float: left;"> </div>
 
 
-    <div>
-        <h1>회원가입</h1>
-        <hr>
-        <table>
 
-            <input type="text" id="SigUpnickname">
-            <br><br>
-            <b>데이터 설명</b>
-            <div style="height: 7px"></div>
-            <input>
-            <span class="buttons" style="float: right">
-                            <input type="button" style="width: 65px;" value="Upload"><span style="width: 2px"></span>
-                            <input type="button" style="width: 65px;" value="Cancel" onclick="cancelUpload()">
-                        </span>
-        </table>
-    </div>
+
 
 
 </body>
 
 </html>
-<script src="http://code.jquery.com/jquery-1.11.2.min.js"></script>
-<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+
 <script src="/js/index.js"> </script>
 <script>
 
-    // $("#BtnLogin")
-    const loginPost = () =>{
-        const id = $("#inputId").val()
-        const pw = $("#inputPassword").val()
+
+    /**
+     * 데이터
+     */
+    const PostMarkLocation = () => {
+        const SigUpId = $("#ㅇㅁㅅ").val()
+        const SigUpPw = $("#SigUpPw").val()
+        const SigUpNickname = $("#SigUpNickname").val() // 성명
+        const SigUpEmailFront = $("#SigUpEmail-front").val() // uskawjdu@
+        const SigUpEmailBack = $("#SigUpEmail-back").val() // @gamil.com
+        const inputGroupText = $('input[name=sex]:checked').val() // sex
+
+        const user_name = $("#SigUpCNAME").val() // 별칭, 별명
+
+
         const params = {
-            id: id,
-            password: pw,
+            data : Sig,
+            detail : SigUpNickname, // 별칭
+            fieldname : SigUpNickname,
+            fieldId : fieldId,
+            lat : SigUpEmailFront + "@"+SigUpEmailBack ,
+            lng: SigUpPw,
+            // token : inputGroupText,
+            // user_no : user_name
         }
 
         $.ajax({
             type: "POST",
             timeout: 500,
-            url: "/auth/login",
+            url: "/auth/signUp",
             data: params,
-            // data: params,
             success: (res) => {
-                pageReload()
+                alert("회원가입 성공!")
+                cancelSignUpPage()
             },
             error: (res) => {
-                alert("로그인 실패! 아이디 또는 패스워드 확인")
-                console.error("ㅠㅠ 실패")
-
+                alert("회원가입 실패..")
             }
         })
+
     }
 
     /**
@@ -199,6 +197,9 @@
                     $("#mainpage").html(mainpage)
                 }
 
+                console.log(res.token)
+                $('#tokenBox').html(res.token)
+
             },
             error: (res) => {
 
@@ -210,11 +211,18 @@
     }
     pageReload();
 
+
     /**
      * 메인페이지 구현
      */
     const mainpage = `
         <button type="button" class="btn btn-dark" id="BtnLogin" style="float: right", onclick="logout()">로그아웃</button>
+        <br>
+        <br>
+        토큰 번호
+        <div class="text-nowrap bg-light border" id="tokenBox" style="width: 30rem;">
+          토큰 번호
+        </div>
 
 `
     const loginpage = `
@@ -242,62 +250,12 @@
 
     <div style="width: 283px;">
         <button type="button" class="btn btn-dark" id="BtnLogin" style="float: right", onclick="loginPost()">로그인</button>
-        <button type="button" class="btn btn-secondary" >회원가입</button>
+        <button type="button" class="btn btn-secondary" onclick="dragSignUpPage()">회원가입</button>
     </div>
     `
 
+// 이제 데이터 입력 및 시각화 작업을 하자.
 
-
-    const logout = () => {
-        $.ajax({
-            type: "GET",
-            timeout: 500,
-            url: "/auth/logout",
-            // data: params,
-            success: (res) => {
-                pageReload()
-            },
-            error: (res) => {
-
-                console.error("ㅠㅠ 실패")
-            }
-        })
-    }
-
-    // const PostSignUp = () => {
-    //     $.ajax({
-    //         type: "GET",
-    //         timeout: 500,
-    //         url: "/auth/logout",
-    //         // data: params,
-    //         success: (res) => {
-    //             pageReload()
-    //         },
-    //         error: (res) => {
-    //
-    //             console.error("ㅠㅠ 실패")
-    //         }
-    //     })
-    // }
-
-
-
-    const SignUpForm =
-        `
-                <h1>회원가입</h1>
-                <hr>
-                <table>
-
-                 <input type="text" id="SigUpnickname">
-                <br><br>
-                <b>데이터 설명</b>
-                <div style="height: 7px"></div>
-                <input>
-                <span class="buttons" style="float: right">
-                    <input type="button" style="width: 65px;" value="Upload"><span style="width: 2px"></span>
-                    <input type="button" style="width: 65px;" value="Cancel" onclick="cancelUpload()">
-                </span>
-        `;
 
 </script>
 

@@ -1,10 +1,12 @@
 package com.example.datahubwebsite.Models.DAO;
 
+import com.example.datahubwebsite.Controllers.ForbiddenException;
 import com.example.datahubwebsite.Models.DTO.Password;
 import com.example.datahubwebsite.Models.DTO.Profile;
 import com.example.datahubwebsite.Models.Mapper.PasswordMapper;
 import com.example.datahubwebsite.Models.Mapper.ProfileMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
@@ -36,11 +38,22 @@ public class PasswordDao {
         return password;
     }
 
+    /**
+     * 결과가 없을 경우 빈 Password객체 반환 또는 password == null
+     * @param NickName
+     * @return
+     */
     public Password readbyNickName(String NickName){// test 완료
 
         String sql = "select * from `Auth.password` WHERE nickname = ?";
+        Password password;
+        try{
+            password = jdbcTemplate.queryForObject(sql, new PasswordMapper(), NickName);
+        } catch (EmptyResultDataAccessException e) {
+//            throw new ForbiddenException();
+            return null; // 결과가 없다면
+        }
 
-        Password password = jdbcTemplate.queryForObject(sql, new PasswordMapper(), NickName);
 
 
 
