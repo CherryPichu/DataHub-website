@@ -2,9 +2,11 @@ package com.example.datahubwebsite.Models.DAO;
 
 import com.example.datahubwebsite.Models.DTO.Profile;
 import com.example.datahubwebsite.Models.DTO.User;
+import com.example.datahubwebsite.Models.Mapper.LocationMapper;
 import com.example.datahubwebsite.Models.Mapper.ProfileMapper;
 import com.example.datahubwebsite.Models.Mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
@@ -31,7 +33,13 @@ public class ProfileDao {
 
         String sql = "select * from `Member.profile` WHERE user_no = ?";
 
-        Profile profile = jdbcTemplate.queryForObject(sql, new ProfileMapper(), userNo);
+        Profile profile;
+
+        try{
+            profile = jdbcTemplate.queryForObject(sql, new ProfileMapper(), userNo);
+        } catch (EmptyResultDataAccessException e) {
+            return null; // 결과가 없다면
+        }
 
         return profile;
     }

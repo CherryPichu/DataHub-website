@@ -19,14 +19,12 @@ public class Location {
     private String fieldname;
     private int user_no;
     private String detail;
-    private String data;
 
-    public Location(double lat, double lng, String fieldname, int user_no, String detail, String data) {
+    public Location(double lat, double lng, String fieldname, int user_no, String detail) {
         this.lat = lat;
         this.lng = lng;
         this.fieldname = fieldname;
         this.user_no = user_no;
         this.detail = detail;
-        this.data = data;
     }
 }

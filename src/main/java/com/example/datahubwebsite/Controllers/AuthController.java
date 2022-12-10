@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.time.Duration;
 import java.util.Base64;
@@ -148,12 +149,13 @@ public class AuthController {
      * @return 
      */
     @GetMapping(value = "/logout")
-    public String logout(HttpServletRequest request){
+    public String logout(HttpServletRequest request, HttpServletResponse response){
         HttpSession session = request.getSession();
 //        session.setAttribute("user_no", null);  // 세션 저장하기
         System.out.println("user_no 삭제 전 :  " + session.getAttribute("user_no") );
         session.removeAttribute("user_no"); // 세션 삭제
         System.out.println("user_no 삭제 후 :  " + session.getAttribute("user_no") );
+
         return "sucess";
     }
 
@@ -162,26 +164,27 @@ public class AuthController {
      * 세션으로 유저번호(user_no) 조회
      */
     @GetMapping(value = "/getuser_no")
-    public String getUser_no(HttpServletRequest request){
+    public String getUser_no(HttpServletRequest request, HttpServletResponse response){
         HttpSession session = request.getSession();
 
         if( session.getAttribute("user_no") != null){
             return  session.getAttribute("user_no").toString();
         }else {
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             return "null";
         }
 
     }
 
     @GetMapping(value = "/getuserJson")
-    public User getuserJson(HttpServletRequest request){
+    public User getuserJson(HttpServletRequest request, HttpServletResponse response){
         HttpSession session = request.getSession();
 
         if( session.getAttribute("user_no") != null){
             return  userdb.readbyUserNo((Integer) session.getAttribute("user_no"));
         }else {
             User errUser = new User("null", 0, -1, "");
-
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             return errUser;
         }
     }
@@ -192,13 +195,14 @@ public class AuthController {
      * @param nickname 중복 검사 대상 아이디 / targeted ID
      */
     @PostMapping(value = "/CheckedDuplicatedId")
-    public String CheckedDuplicatedId(HttpServletRequest request, @RequestParam(value = "id") String nickname){
+    public String CheckedDuplicatedId(HttpServletRequest request, HttpServletResponse response,
+                                      @RequestParam(value = "id") String nickname){
         HttpSession session = request.getSession();
 
         if(passworddb.readbyNickName(nickname) ==  null){
             return "yes";
         }
-
+        response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         return "null";
 
     }

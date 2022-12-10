@@ -1,8 +1,10 @@
 package com.example.datahubwebsite.Models.DAO;
 
 import com.example.datahubwebsite.Models.DTO.User;
+import com.example.datahubwebsite.Models.Mapper.ProfileMapper;
 import com.example.datahubwebsite.Models.Mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
@@ -30,7 +32,12 @@ public class UserDao {
 
         String sql = "select * from `Member.user` WHERE user_no = ?";
 
-        User user = jdbcTemplate.queryForObject(sql, new UserMapper(), userNo);
+        User user;
+        try{
+            user = jdbcTemplate.queryForObject(sql, new UserMapper(), userNo);
+        } catch (EmptyResultDataAccessException e) {
+            return null; // 결과가 없다면
+        }
 
         return user;
     }
@@ -38,7 +45,14 @@ public class UserDao {
 
         String sql = "select * from `Member.user` WHERE token = ?";
 
-        User user = jdbcTemplate.queryForObject(sql, new UserMapper(), Token);
+        User user;
+
+        try{
+            user = jdbcTemplate.queryForObject(sql, new UserMapper(), Token);
+        } catch (EmptyResultDataAccessException e) {
+            return null; // 결과가 없다면
+        }
+
         System.out.println(user.getUser_no());
         return user;
     }

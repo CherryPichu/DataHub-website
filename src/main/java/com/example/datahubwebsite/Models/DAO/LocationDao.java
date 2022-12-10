@@ -5,6 +5,7 @@ import com.example.datahubwebsite.Models.DTO.Password;
 import com.example.datahubwebsite.Models.Mapper.LocationMapper;
 import com.example.datahubwebsite.Models.Mapper.PasswordMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
@@ -25,10 +26,10 @@ public class LocationDao {
 
     public void create(Location location){ // test 완료
 
-        String sql = "Insert Into `Data.location` (lat, lng, fieldname, user_no, detail, data) values (?,?,?, ?, ?, ?)";
+        String sql = "Insert Into `Data.location` (lat, lng, fieldname, user_no, detail) values (?,?,?, ?, ?)";
 
         jdbcTemplate.update(sql,location.getLat() , location.getLng(), location.getFieldname(),
-                location.getUser_no(), location.getDetail(), location.getData());
+                location.getUser_no(), location.getDetail());
 
 
     }
@@ -44,6 +45,22 @@ public class LocationDao {
         return ListLoc;
     }
 
+    public Location readbyfieldName(String fieldName){// test 완료
+
+        Location location;
+
+        String sql = "select * from `Data.location` WHERE fieldname = " + fieldName;
+        try{
+            location = jdbcTemplate.queryForObject(sql, new LocationMapper());
+        } catch (EmptyResultDataAccessException e) {
+            return null; // 결과가 없다면
+        }
+
+
+        return location;
+    }
+
+
 
     public List<Location> readbylocationNo(int no){// test 완료
 
@@ -56,11 +73,12 @@ public class LocationDao {
 
     public void updatebylocationNo(Location location){// test 미완료
 
-        String sql = "Update `Data.location` SET lat = ? , lng = ?, fieldname = ?, user_no = ? , detail = ?, data= ? where location_id = ?";
+        String sql = "Update `Data.location` SET lat = ? , lng = ?, fieldname = ?, user_no = ? , detail = ? where location_id = ?";
         jdbcTemplate.update(sql, location.getLat(), location.getLng(), location.getFieldname(),
-                location.getUser_no(), location.getDetail(), location.getLocation_id() , location.getData());
+                location.getUser_no(), location.getDetail(), location.getLocation_id() );
 
     }
+
 
     public void deletebylocationNo(int locatioinNo){ // test 미완료
         String sql = "delete from `Data.location` WHERE location_id = ?";

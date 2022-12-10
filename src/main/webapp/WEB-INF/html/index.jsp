@@ -40,21 +40,29 @@
             uploadDiv.innerHTML = `
                 <h1>업로드</h1>
                 <hr>
-                <b style="padding-right: 7px">데이터명</b><input type="text" style="width: 500px;">&nbsp;
-                <b style="padding-right: 7px">분류</b>
-                <select id="category" style="width: 72px;height: 22px;">
-                    <option value="사회">사회</option>
-                    <option value="자연과학">자연과학</option>
-                </select>
+                <b style="padding-right: 7px">필드명</b><input type="text" style="width: 300px;">&nbsp;
+
                 <br><br>
-                <b>데이터 설명</b>
+                <b>데이터 상세 설명</b>
                 <div style="height: 7px"></div>
-                <textarea name="Text1" style="width: calc(100% - 7px); resize: none;" rows="18"></textarea>
+                <textarea name="detail" style="width: calc(80% - 7px); resize: none;" rows="4"></textarea>
                 <div style="height: 7px"></div>
-                <input type="file">
-                <span class="buttons" style="float: right">
-                    <input type="button" style="width: 65px;" value="Upload"><span style="width: 2px"></span>
-                    <input type="button" style="width: 65px;" value="Cancel" onclick="cancelUpload()">
+                <div style="float: left; width:100%;">
+
+
+                </div>
+                <table style="width: 100%;">
+                    <tr>
+                        <td> lat : <input type="text" id="LatInfo" class="form-control" style="width: calc(80% - 7px); " disabled></td>
+                        <td> lng : <input type="text" id="LngInfo" class="form-control" style="width: calc(80% - 7px);"  disabled></td>
+                    </tr>
+                </table>
+                <div style="height: 7px"></div>
+                DB에 데이터 보내는 주소 : <input type="text" id="tokenInfo" class="form-control" style="width: calc(80% - 7px); " disabled>
+                <div style="height: 7px"></div>
+                <span class="buttons" style="float: left;">
+                        <button type="button" class="btn btn-dark" id="BtnLocationCancel" style="float: left">취소</button>
+                        <button type="button" class="btn btn-secondary" id="BtnPostLocationData" onclick="">등록</button>
                 </span>`;
             document.body.appendChild(uploadDiv);
         }
