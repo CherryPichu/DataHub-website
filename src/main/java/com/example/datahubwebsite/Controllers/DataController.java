@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping(value = "/auth")
+@RequestMapping(value = "/data")
 public class DataController {
 
     @Autowired
@@ -33,25 +33,30 @@ public class DataController {
     @PostMapping (value="/api/postLocationData")
     public String postLocationData(HttpServletRequest request, HttpServletResponse response,
                                    @RequestParam(value = "lat") double lat, @RequestParam(value ="lng") double lng,
-                                   @RequestParam(value = "fieldname") String fieldname, @RequestParam(value ="user_no") int user_no,
-                                   @RequestParam(value ="detail") String detail, @RequestParam(value ="token") String token){
+                                   @RequestParam(value = "fieldname") String fieldname, @RequestParam(value ="detail")
+                                       String detail, @RequestParam(value ="token") String token){
 
         HttpSession session = request.getSession();
         int userNo;
+
         if(session.getAttribute("user_no") != null) {
             userNo = (int) session.getAttribute("user_no");
         }else{
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            return "fail";
+            return "null";
         }
 
-        if(userdb.readbyToken(token) != null && locationdb.readbyfieldName(fieldname) != null ){ // 잘못된 토큰 입력시 에러. 500
+        if( locationdb.readbyfieldName(fieldname) != null ){
+
+        }
+
+        if(userdb.readbyToken(token) != null ){ // 잘못된 토큰 입력시 에러. 500
             Location location = new Location(lat, lng, fieldname, userNo, detail );
             locationdb.create(location);
             return "success";
         }else{
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            return "faill";
+//            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            return "null";
         }
 //        Location location = new Location(lat, lng, fieldname, userNo, detail );
 //        locationdb.create(location);

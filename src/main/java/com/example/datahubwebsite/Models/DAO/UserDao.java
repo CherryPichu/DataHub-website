@@ -60,6 +60,8 @@ public class UserDao {
     public void updatebyUserNo(User user){// test 미완료
 
         String sql = "Update `Member.user` SET user_name = ?, login_type = ?, token = ? where user_no = ?";
+
+
         jdbcTemplate.update(sql, user.getUser_name(), user.getLogin_type(), user.getToken(), user.getUser_no() );
 
     }

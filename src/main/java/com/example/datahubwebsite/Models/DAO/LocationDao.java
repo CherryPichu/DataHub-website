@@ -49,9 +49,9 @@ public class LocationDao {
 
         Location location;
 
-        String sql = "select * from `Data.location` WHERE fieldname = " + fieldName;
+        String sql = "select * from `Data.location` WHERE fieldname = ?" ;
         try{
-            location = jdbcTemplate.queryForObject(sql, new LocationMapper());
+            location = jdbcTemplate.queryForObject(sql, new LocationMapper(), fieldName);
         } catch (EmptyResultDataAccessException e) {
             return null; // 결과가 없다면
         }

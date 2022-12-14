@@ -31,21 +31,42 @@
             crossorigin=""></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/monet/0.9.3-485/monet.min.js"></script>
     <script type="text/javascript">
-        function upload(location) {
-            let uploadDiv = document.querySelector(".upload");
+        /**
+         * locationData.leg
+         * {lat: 37.88830069256622, lng: 127.72715806961061}
+         *
+         * TOKEN
+         * 토큰 번호
+         *
+         * isLogin
+         * 현재 로그인되었나?
+         * bool
+         *
+         */
+        let locationData;
+        let TOKEN;
+        let isLogin;
+
+        function upload() {
+            // 로그인 안됐으면 return 하는 문장 추가하기.
+
+
+            /**
+             * 기존에 페이지가 있으면 삭제하고 새로운 페이지를 만듬.
+             */
+            let uploadDiv = document.querySelector(".uploadPage");
             if (uploadDiv != null) uploadDiv.remove();
             uploadDiv = document.createElement("div");
-            uploadDiv.className = "upload";
-
+            uploadDiv.className = "uploadPage";
             uploadDiv.innerHTML = `
                 <h1>업로드</h1>
                 <hr>
-                <b style="padding-right: 7px">필드명</b><input type="text" style="width: 300px;">&nbsp;
+                <b style="padding-right: 7px" >필드명</b><input type="text" id="fieldname" style="width: 300px;">&nbsp;
 
                 <br><br>
                 <b>데이터 상세 설명</b>
                 <div style="height: 7px"></div>
-                <textarea name="detail" style="width: calc(80% - 7px); resize: none;" rows="4"></textarea>
+                <textarea name="detail" style="width: calc(80% - 7px); resize: none;" id="detail" rows="4"></textarea>
                 <div style="height: 7px"></div>
                 <div style="float: left; width:100%;">
 
@@ -54,22 +75,23 @@
                 <table style="width: 100%;">
                     <tr>
                         <td> lat : <input type="text" id="LatInfo" class="form-control" style="width: calc(80% - 7px); " disabled></td>
-                        <td> lng : <input type="text" id="LngInfo" class="form-control" style="width: calc(80% - 7px);"  disabled></td>
+                        <td> lng : <input type="text" id="LngInfo" class="form-control" style="width: calc(80% - 7px);" disabled></td>
                     </tr>
                 </table>
                 <div style="height: 7px"></div>
-                DB에 데이터 보내는 주소 : <input type="text" id="tokenInfo" class="form-control" style="width: calc(80% - 7px); " disabled>
+                DB에 데이터 보내는 주소 : <input type="text" id="tokenInfo" class="form-control" style="width: calc(80% - 7px); "disabled>
                 <div style="height: 7px"></div>
-                <span class="buttons" style="float: left;">
-                        <button type="button" class="btn btn-dark" id="BtnLocationCancel" style="float: left">취소</button>
-                        <button type="button" class="btn btn-secondary" id="BtnPostLocationData" onclick="">등록</button>
+                <span class="buttons" style="float: left; width:80%">
+                        <button type="button" class="btn btn-dark" id="BtnLocationCancel" style="float: left; margin-right: 100px;" onclick="cancelUploadLocation()">취소</button>
+                        <button type="button" class="btn btn-secondary" style="float: right;" id="BtnPostLocationData" onclick="PostMarkLocation()">등록</button>
                 </span>`;
             document.body.appendChild(uploadDiv);
+
+            $("#LatInfo").val( locationData.lat )
+            $("#LngInfo").val( locationData.lng )
+            $("#tokenInfo").val( TOKEN )
         }
 
-        function cancelUpload() {
-            document.querySelector(".upload").remove();
-        }
 
         window.onload = () => {
             const map = L.map('map').setView([37.8835, 127.73], 16); // 기초 시작 지점
@@ -83,7 +105,7 @@
 
             map.on('contextmenu', function (e) {
                 let location = e.latlng
-                console.log(location)
+                locationData = e.latlng
 
                 with (location) {
                     let popup = L.popup()
@@ -145,41 +167,43 @@
 
 
     /**
-     * 데이터
+     * 데이터 Location 서버에 등록
      */
     const PostMarkLocation = () => {
-        const SigUpId = $("#ㅇㅁㅅ").val()
-        const SigUpPw = $("#SigUpPw").val()
-        const SigUpNickname = $("#SigUpNickname").val() // 성명
-        const SigUpEmailFront = $("#SigUpEmail-front").val() // uskawjdu@
-        const SigUpEmailBack = $("#SigUpEmail-back").val() // @gamil.com
-        const inputGroupText = $('input[name=sex]:checked').val() // sex
+        const fieldNmae = $("#fieldname").val() // 필드명
+        const detail = $("#detail").val() // 데이터 상세 설명
+        const Lat = $("#LatInfo").val() // 위도
+        const Lng= $("#LngInfo").val() // 경도
+        const token = TOKEN // 경도
+
+        if("fieldName" == ""){
+            alert("fieldName 을 입력하세요.")
+            return;
+        }
 
         const user_name = $("#SigUpCNAME").val() // 별칭, 별명
 
 
         const params = {
-            data : Sig,
-            detail : SigUpNickname, // 별칭
-            fieldname : SigUpNickname,
-            fieldId : fieldId,
-            lat : SigUpEmailFront + "@"+SigUpEmailBack ,
-            lng: SigUpPw,
-            // token : inputGroupText,
-            // user_no : user_name
+            fieldname: fieldNmae,
+            detail : detail,
+            lat : Lat ,
+            lng: Lng,
+            token : token
         }
 
         $.ajax({
             type: "POST",
             timeout: 500,
-            url: "/auth/signUp",
+            url: "/data/api/postLocationData",
             data: params,
             success: (res) => {
-                alert("회원가입 성공!")
-                cancelSignUpPage()
+                alert("해당 자표 데이터 필드 생성 완료!")
+                document.querySelector(".uploadPage").remove()
             },
             error: (res) => {
-                alert("회원가입 실패..")
+                alert("데이터 생성 에러.")
+
             }
         })
 
@@ -198,15 +222,14 @@
             data: $(this).serialize(),
             success: (res) => {
                 console.log(res)
-                $('#nickname').text(res.user_name); // 닉네임 구성
-                if(res.user_name == "null"){
-                    $("#mainpage").html(loginpage) // 로그인 안된 사용자.
+                if(res.token != ""){
+                    $('#nickname').text(res.user_name); // 닉네임 구성
+                    TOKEN = res.token // 토큰 데이터 저장
+                    $("#mainpage").html(mainpage) // 로그인이 된 사용자.
+                    $("#mainpagetoken").text(res.token) // token 넣기
                 }else{
-                    $("#mainpage").html(mainpage)
+                    $("#mainpage").html(loginpage) // 로그인 안된 사용자.
                 }
-
-                console.log(res.token)
-                $('#tokenBox').html(res.token)
 
             },
             error: (res) => {
@@ -215,6 +238,8 @@
 
             }
         })
+
+
 
     }
     pageReload();
@@ -229,10 +254,10 @@
         <br>
         토큰 번호
         <div class="text-nowrap bg-light border" id="tokenBox" style="width: 30rem;">
-          토큰 번호
+          토큰 번호 : <span id="mainpagetoken"> </span>
         </div>
+        `
 
-`
     const loginpage = `
 
     <div class="title" style="font-weight: bold;">로그인</div>
@@ -257,13 +282,21 @@
     </table>
 
     <div style="width: 283px;">
-        <button type="button" class="btn btn-dark" id="BtnLogin" style="float: right", onclick="loginPost()">로그인</button>
+        <button type="button" class="btn btn-dark" id="BtnLogin" style="float: right" onclick="loginPost()">로그인</button>
         <button type="button" class="btn btn-secondary" onclick="dragSignUpPage()">회원가입</button>
     </div>
     `
 
-// 이제 데이터 입력 및 시각화 작업을 하자.
 
+    /**
+     * 데이터 위치 등록 버튼.
+     */
+    const cancelUploadLocation = () => {
+        if( document.querySelector(".uploadPage") != null){
+            let signupPage = document.querySelector(".uploadPage");
+            signupPage.remove()
+        }
+    }
 
 </script>
 

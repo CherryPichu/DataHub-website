@@ -134,6 +134,8 @@ public class AuthController {
         if(auth == null){
             throw new ForbiddenException();
         }
+
+
         if( BCrypt.checkpw(password, auth.getPassword()) ){
             session.setAttribute("user_no", auth.getUser_no());  // 세션 저장하기
             return "sucess";
@@ -168,7 +170,7 @@ public class AuthController {
         HttpSession session = request.getSession();
 
         if( session.getAttribute("user_no") != null){
-            return  session.getAttribute("user_no").toString();
+            return session.getAttribute("user_no").toString();
         }else {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             return "null";
@@ -184,7 +186,7 @@ public class AuthController {
             return  userdb.readbyUserNo((Integer) session.getAttribute("user_no"));
         }else {
             User errUser = new User("null", 0, -1, "");
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+//            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             return errUser;
         }
     }
@@ -202,6 +204,7 @@ public class AuthController {
         if(passworddb.readbyNickName(nickname) ==  null){
             return "yes";
         }
+
         response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         return "null";
 
