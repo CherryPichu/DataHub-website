@@ -13,8 +13,8 @@ public class LocationMapper implements RowMapper<Location> {
     public Location mapRow(ResultSet rs, int rowNum) throws SQLException {
 //        ArrayList<Location> arrLocation = new ArrayList<Location>();
         Location location = new Location();
-        location.setLat(rs.getInt("lat"));
-        location.setLng(rs.getInt("lng"));
+        location.setLat(rs.getDouble("lat"));
+        location.setLng(rs.getDouble("lng"));
         location.setFieldname(rs.getString("fieldname"));
         location.setDetail(rs.getString("detail"));
 

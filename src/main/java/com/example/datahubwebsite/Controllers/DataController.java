@@ -42,7 +42,7 @@ public class DataController {
         if(session.getAttribute("user_no") != null) {
             userNo = (int) session.getAttribute("user_no");
         }else{
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND); //404
             return "null";
         }
 
@@ -55,7 +55,7 @@ public class DataController {
             locationdb.create(location);
             return "success";
         }else{
-//            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            response.setStatus(HttpServletResponse.SC_NO_CONTENT); // 204 - 내용 없음
             return "null";
         }
 //        Location location = new Location(lat, lng, fieldname, userNo, detail );
@@ -74,7 +74,7 @@ public class DataController {
             userNo = (int) session.getAttribute("user_no");
             locations = locationdb.readbyUserNo( userNo );
         }else{
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            response.setStatus(HttpServletResponse.SC_NO_CONTENT); // 204 - 내용 없음
             locations = locationdb.readbyUserNo( -1 ); // 에러 발생
         }
 

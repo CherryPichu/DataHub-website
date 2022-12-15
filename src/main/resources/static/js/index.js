@@ -32,22 +32,7 @@ const loginPost = () =>{
 
 
 
-// 로그아웃 요청
-const logout = () => {
-    $.ajax({
-        type: "GET",
-        timeout: 500,
-        url: "/auth/logout",
-        // data: params,
-        success: (res) => {
-            pageReload()
-        },
-        error: (res) => {
 
-            console.error("ㅠㅠ 실패")
-        }
-    })
-}
 
 /**
  * 회원가입 페이지 열기

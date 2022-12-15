@@ -92,9 +92,11 @@
             $("#tokenInfo").val( TOKEN )
         }
 
-
+        var map; // 전역변수 선언!!
+        var mapMarkers = []; // 마커 객체들
         window.onload = () => {
-            const map = L.map('map').setView([37.8835, 127.73], 16); // 기초 시작 지점
+            map = L.map('map').setView([37.8835, 127.73], 15); // 기초 시작 지점
+
 
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 maxZoom: 19,
@@ -121,7 +123,8 @@
                         .openOn(map);
                 }
             });
-            // upload(null)
+            pageReload();
+            reLoadMakeMarker()
 
         }
     </script>
@@ -198,6 +201,7 @@
             url: "/data/api/postLocationData",
             data: params,
             success: (res) => {
+                reLoadMakeMarker()
                 alert("해당 자표 데이터 필드 생성 완료!")
                 document.querySelector(".uploadPage").remove()
             },
@@ -207,6 +211,8 @@
             }
         })
 
+
+
     }
 
     /**
@@ -214,6 +220,8 @@
      * /auth/getuserJson 도메인에서 유저세션 정보로 유저 정보를 받아옴.
      */
     const pageReload = () =>{
+
+
         $.ajax({
             type: "GET",
             dataType: "json",
@@ -221,29 +229,42 @@
             url: "/auth/getuserJson",
             data: $(this).serialize(),
             success: (res) => {
-                console.log(res)
+                // console.log(res)
                 if(res.token != ""){
                     $('#nickname').text(res.user_name); // 닉네임 구성
                     TOKEN = res.token // 토큰 데이터 저장
                     $("#mainpage").html(mainpage) // 로그인이 된 사용자.
                     $("#mainpagetoken").text(res.token) // token 넣기
+
                 }else{
                     $("#mainpage").html(loginpage) // 로그인 안된 사용자.
                 }
-
+                reLoadMakeMarker()
             },
             error: (res) => {
-
                 console.error("ㅠㅠ 실패")
-
             }
         })
 
 
-
     }
-    pageReload();
 
+    // 로그아웃 요청
+    const logout = () => {
+        $.ajax({
+            type: "GET",
+            timeout: 500,
+            url: "/auth/logout",
+            // data: params,
+            success: (res) => {
+                pageReload()
+            },
+            error: (res) => {
+
+                console.error("ㅠㅠ 실패")
+            }
+        })
+    }
 
     /**
      * 메인페이지 구현
@@ -297,6 +318,54 @@
             signupPage.remove()
         }
     }
+
+
+    /**
+     * 지도에 marker 를 생성함.
+     */
+    const reLoadMakeMarker = () => {
+        $.ajax({
+            type: "GET",
+            dataType: "json",
+            timeout: 500,
+            url: "/data/api/getLocationData",
+            data: $(this).serialize(),
+            success: (res) => {
+
+
+                /**
+                 * 마커 전부 삭제
+                 * 참고 : https://stackoverflow.com/questions/28636723/how-to-clear-leaflet-map-of-all-markers-and-layers-before-adding-new-ones
+                 */
+                $('#nickname').text("null"); // 닉네임 구성
+                for(var i = 0; i < this.mapMarkers.length; i++){ // 맵 마커 전부 삭제
+                    map.removeLayer(this.mapMarkers[i]);
+                }
+                this.mapMarkers = [] // 마커 기록 삭제
+                // console.log( mapMarkers)
+
+
+                if(res == null){ // 결과 데이터가 없다면.
+                    return;
+                }
+
+                for(let data of res){
+                    // 참고 : https://stackoverflow.com/questions/16927793/marker-in-leaflet-click-event
+                    let marker = L.marker( [data.lat, data.lng])
+                    marker.on("click", (event) => {
+                        console.log(event )
+                    }).addTo(map);
+                    this.mapMarkers.push(marker);
+                }
+
+            },
+            error: (res) => {
+                console.error("ㅠㅠ 실패")
+            }
+        })
+
+    }
+
 
 </script>
 
