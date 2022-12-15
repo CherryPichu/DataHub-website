@@ -208,4 +208,39 @@ public class DataController {
         return "success";
     }
 
+    @GetMapping(value="/api/getDatalist")
+    public List<DataDto> getDatalist(HttpServletRequest request, HttpServletResponse response,
+                             @RequestParam(value = "token") String token,
+                             @RequestParam(value= "fieldname") String fieldname){
+        HttpSession session = request.getSession();
+
+        User user = userdb.readbyToken(token);
+
+        if(user == null){
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND); //404
+            return null;
+        }
+
+
+        Location location = locationdb.readbyfieldName(fieldname, user.getUser_no());
+        if(location == null){
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND); //404
+            return null;
+        }
+
+        if( !user.getToken().equals( token ) ){ // 토큰이 일치해야만 데이터를 넣을 수 있다.
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND); //404
+            return null;
+        }
+
+        /**
+         * token과 fieldname이 다 일치한지 검증되었을 때
+         * Data.data에 데이터를 추가함.
+         */
+
+
+
+        List<DataDto> datalist = datadb.readbylocationId(location.getLocation_id());
+        return datalist;
+    }
 }

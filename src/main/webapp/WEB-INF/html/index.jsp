@@ -420,7 +420,7 @@ const ViewGraphPage = `
 
     <div id='myDiv'><!-- Plotly chart will be drawn inside this DIV --></div>
     <div style="height: 10px;"></div>
-    <button type="button" class="btn btn-dark" style="float: left; margin-right: 100px;" onclick="">데이터 다운로드</button>
+    <button type="button" class="btn btn-dark" style="float: left; margin-right: 100px;" onclick="getDatalist()">데이터 다운로드</button>
     <button type="button" class="btn btn-dark" style="float: right;" onclick="deleteLocationMark()">마커 데이터 삭제</button>
 
 </div> `
@@ -449,7 +449,11 @@ const ViewGraphPage = `
     }
 
 </style>
-
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<!-- 필수, SheetJS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.14.3/xlsx.full.min.js"></script>
+<!--필수, FileSaver savaAs 이용 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.8/FileSaver.min.js"></script>
 <script>
 
 
@@ -532,7 +536,93 @@ const ViewGraphPage = `
 
     }
     const deleteLocationMark = () => {
+        if(!confirm("정말 이 마커(Marker)를 삭제하겠습니까?")){
+            return;
+        }
         deleteLocationMark2( TOKEN, $("#fieldname").text() )
+    }
+
+    function json2array(json){
+        var result = [];
+        var keys = Object.keys(json);
+        keys.forEach(function(key){
+            result.push(json[key]);
+        });
+        return result;
+    }
+
+    /**
+     * JS로 엑셀 파일 쓰기
+     * https://eblo.tistory.com/84
+     */
+    function s2ab(s) {
+        var buf = new ArrayBuffer(s.length); //convert s to arrayBuffer
+        var view = new Uint8Array(buf);  //create uint8array as viewer
+        for (var i=0; i<s.length; i++) view[i] = s.charCodeAt(i) & 0xFF; //convert to octet
+        return buf;
+    }
+
+    const getDatalist2 = (token, field) => {
+        const params = {
+            token : token,
+            fieldname : field
+        }
+
+        $.ajax({
+            type: "GET",
+            timeout: 500,
+            url: "/data/api/getDatalist",
+            data: params,
+            contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+            success: (res) => {
+                // console.log(res)
+
+                var excelHandler = {
+                    getExcelFileName : function(){
+                        return 'json-test.xlsx';
+                    },
+                    getSheetName : function(){
+                        return 'Json Test Sheet';
+                    },
+                    getExcelData : function(){
+                        result = []
+                        for(var i of res){
+                            result.push(json2array(i))
+                        }
+
+                        console.log(res)
+                        return res;
+                    },
+                    getWorksheet : function(){
+                        return XLSX.utils.json_to_sheet(this.getExcelData());
+                    }
+
+                }
+
+                // step 1. workbook 생성
+                var wb = XLSX.utils.book_new();
+
+                // step 2. 시트 만들기
+                var newWorksheet = excelHandler.getWorksheet();
+
+                // step 3. workbook에 새로만든 워크시트에 이름을 주고 붙인다.
+                XLSX.utils.book_append_sheet(wb, newWorksheet, excelHandler.getSheetName());
+
+                // step 4. 엑셀 파일 만들기
+                var wbout = XLSX.write(wb, {bookType:'xlsx',  type: 'binary'});
+
+                // step 5. 엑셀 파일 내보내기
+                saveAs(new Blob([s2ab(wbout)],{type:"application/octet-stream"}), excelHandler.getExcelFileName());
+            },
+            error: (res) => {
+                console.error("ㅠㅠ 실패")
+            }
+        })
+
+    }
+    const getDatalist = () => {
+
+        getDatalist2( TOKEN, $("#fieldname").text() )
     }
 </script>
 

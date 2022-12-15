@@ -3,6 +3,7 @@ package com.example.datahubwebsite.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller()
 public class PageCntroller {
@@ -21,10 +22,5 @@ public class PageCntroller {
         return "html/test";
     }
 
-    @GetMapping(value = "/datadownload")
-    public String DownData(Model model){
 
-
-        return "html/test";
-    }
 }
