@@ -45,16 +45,21 @@ public class LocationDao {
         return ListLoc;
     }
 
-    public Location readbyfieldName(String fieldName){// test 완료
+    public Location readbyfieldName(String fieldName, int user_no){// test 완료
 
         Location location;
 
-        String sql = "select * from `Data.location` WHERE fieldname = ?" ;
+        String sql = "select * from `Data.location` WHERE fieldname = ? AND user_no = ?" ;
+//        System.out.println(user_no+ "  :  "+ fieldName);
         try{
-            location = jdbcTemplate.queryForObject(sql, new LocationMapper(), fieldName);
+            location = jdbcTemplate.queryForObject(sql, new LocationMapper(), fieldName, user_no);
         } catch (EmptyResultDataAccessException e) {
             return null; // 결과가 없다면
         }
+        if(location.getLocation_id() == 0){
+            return null;
+        }
+
 
 
         return location;
@@ -80,9 +85,9 @@ public class LocationDao {
     }
 
 
-    public void deletebylocationNo(int locatioinNo){ // test 미완료
+    public void deletebylocationNo(int locatioinId){ // test 미완료
         String sql = "delete from `Data.location` WHERE location_id = ?";
-        jdbcTemplate.update(sql, locatioinNo);
+        jdbcTemplate.update(sql, locatioinId);
     }
 
 }

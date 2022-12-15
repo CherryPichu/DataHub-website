@@ -5,6 +5,9 @@
 <script src="http://code.jquery.com/jquery-1.11.2.min.js"></script>
 <script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
 
+<%--plotly 라이브러리--%>
+<script src="https://cdn.plot.ly/plotly-2.16.1.min.js"></script>
+
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%--부트스트랩 적용!--%>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
@@ -349,15 +352,35 @@
                     return;
                 }
 
+                /**
+                 * 받아온 마커 정보를 토대로 지도에 마커 생성.
+                 * 참고 : https://stackoverflow.com/questions/16927793/marker-in-leaflet-click-event
+                 */
                 for(let data of res){
-                    // 참고 : https://stackoverflow.com/questions/16927793/marker-in-leaflet-click-event
-                    let marker = L.marker( [data.lat, data.lng])
-                    marker.on("click", (event) => {
-                        console.log(event )
-                    }).addTo(map);
-                    this.mapMarkers.push(marker);
-                }
+                    // console.log(data)
 
+                    let marker = L.marker( [data.lat, data.lng])
+                    mapMarkers.push(marker) // 마커 데이터 추가.
+                    marker.on({"click" : (event) => {
+                        let body = document.querySelector("body");
+
+                        let  viewGraphPage = document.querySelector(".ViewGraphPagee");
+                        if ( viewGraphPage != null)  viewGraphPage.remove();
+                        viewGraphPage = document.createElement("div");
+                        viewGraphPage.className = "ViewGraphPage";
+                        viewGraphPage.innerHTML = ViewGraphPage;
+                        document.body.appendChild(viewGraphPage);
+                        $("#LatInfo").val( data.lat )
+                        $("#LngInfo").val( data.lng )
+                        $("#tokenInfo").val( "http://localhost:8088/data/api/PostData?data={데이터}&fieldname="+ data.fieldname +"&token=" + TOKEN )
+                        $("#fieldname").text( data.fieldname )
+                        $("#invisiableToken").val( TOKEN ) // 메타 데이터, 삭제에 활용
+                        getDatas(TOKEN,  data.fieldname)
+
+                    }}).addTo(map);
+
+                }
+                console.log("reLoadMakeMarker 실행!")
             },
             error: (res) => {
                 console.error("ㅠㅠ 실패")
@@ -369,6 +392,147 @@
 
 </script>
 
+<script>
+const ViewGraphPage = `
+<div class="ViewGraphPage" >
+    <div style="height: 10px;"></div>
+    <h2>필드명 :  <strong><span id="fieldname"> </span></strong> <button type="button" class="btn btn-dark" id="" style="float: right;" onclick="cancelViewGraphPage()">X</button></h2>
+    <input id="invisiableToken" style="display: none;"></input>
+    <hr>
+
+    <div style="float: left; width:100%;">
 
 
+    </div>
+    <table style="width: 100%;">
+        <tr>
+            <td> lat : <input type="text" id="LatInfo" class="form-control" style="width: calc(80% - 7px); " disabled></td>
+            <td> lng : <input type="text" id="LngInfo" class="form-control" style="width: calc(80% - 7px);" disabled></td>
+        </tr>
+    </table>
+    <div style="height: 7px"></div>
+    DB에 데이터 보내는 주소 : <input type="text" id="tokenInfo" class="form-control" style="width: calc(80% - 7px); "disabled>
+    <div style="height: 7px"></div>
+    <span class="buttons" style="float: left; width:80%">
+                            <button type="button" class="btn btn-dark" id="BtnLocationCancel" style="float: left; margin-right: 100px;" onclick="cancelUploadLocation()">취소</button>
+                            <button type="button" class="btn btn-secondary" style="float: right;" id="BtnPostLocationData" onclick="PostMarkLocation()">등록</button>
+    </span>
+
+    <div id='myDiv'><!-- Plotly chart will be drawn inside this DIV --></div>
+    <div style="height: 10px;"></div>
+    <button type="button" class="btn btn-dark" style="float: left; margin-right: 100px;" onclick="">데이터 다운로드</button>
+    <button type="button" class="btn btn-dark" style="float: right;" onclick="deleteLocationMark()">마커 데이터 삭제</button>
+
+</div> `
+
+</script>
+
+<style>
+    .ViewGraphPage {
+        --width: 700px;
+        --height: 700px;
+        --padding-horizontal: 20px;
+        z-index: 300;
+        padding-left: var(--padding-horizontal);
+        padding-right: var(--padding-horizontal);
+        width: var(--width);
+        height: var(--height);
+        top: calc(50% - var(--height) / 2);
+        left: calc(50% - var(--width) / 2 - var(--padding-horizontal));
+        background-color: rgba(255, 255, 255, 0.85);
+        position: absolute;
+        background: blanchedalmond;
+    }
+    #myDiv {
+        width : 100%;
+        height: 400px;
+    }
+
+</style>
+
+<script>
+
+
+    /**
+     * plot을 그릴 데이터를 가져옴
+     *
+     */
+    const getDatas = (token, field) => {
+        const params = {
+            token : token,
+            fieldname : field
+        }
+
+        $.ajax({
+            type: "GET",
+            timeout: 500,
+            url: "/data/api/GetData",
+            data: params,
+            contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+            success: (res) => {
+                data_set = []
+                time_set = []
+                for(i of res){
+                    data_set.push(i.data);
+                    time_set.push(i.create_at)
+                }
+
+                /**
+                 * 그래프 만듬
+                 */
+                var data = [
+                    {
+                        x: time_set,
+                        y: data_set ,
+                        type: 'scatter'
+                    }
+                ];
+                Plotly.newPlot('myDiv', data);
+
+                // console.log(res)
+            },
+            error: (res) => {
+
+                console.error("ㅠㅠ 실패")
+            }
+        })
+    }
+
+
+    const cancelViewGraphPage = () => {
+        if( document.querySelector(".ViewGraphPage") != null){
+            let signupPage = document.querySelector(".ViewGraphPage");
+            signupPage.remove()
+        }
+    }
+
+    const deleteLocationMark2 = (token, field) => {
+        const params = {
+            token : token,
+            fieldname : field
+        }
+
+        $.ajax({
+            type: "GET",
+            timeout: 500,
+            url: "/data/api/DeleteData",
+            data: params,
+            contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+            success: (res) => {
+                console.log(res)
+
+
+                cancelViewGraphPage();
+                reLoadMakeMarker();
+            },
+            error: (res) => {
+                console.error("ㅠㅠ 실패")
+            }
+        })
+
+    }
+    const deleteLocationMark = () => {
+        deleteLocationMark2( TOKEN, $("#fieldname").text() )
+    }
+</script>
 

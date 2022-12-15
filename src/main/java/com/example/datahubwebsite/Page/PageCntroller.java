@@ -13,4 +13,18 @@ public class PageCntroller {
 
         return "html/index";
     }
+
+    @GetMapping(value = "/test")
+    public String testnPage(Model model){
+
+
+        return "html/test";
+    }
+
+    @GetMapping(value = "/datadownload")
+    public String DownData(Model model){
+
+
+        return "html/test";
+    }
 }

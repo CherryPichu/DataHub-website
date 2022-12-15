@@ -25,7 +25,7 @@ public class DataDao {
 
     public void create(DataDto data){ // test 완료
 
-        String sql = "Insert Into `Data.location` (data, location_id) values (?, ?)";
+        String sql = "Insert Into `Data.data` (data, location_id) values (?, ?)";
 
         jdbcTemplate.update(sql,data.getData() , data.getLocation_id() );
 
@@ -35,7 +35,7 @@ public class DataDao {
 
         List<DataDto> dataList;
 
-        String sql = "select * from `Data.data` WHERE location_id = " + locationId;
+        String sql = "select * from `Data.data` WHERE location_id = " + locationId + " ORDER BY CreateAt DESC LIMIT 1000;";
 
         dataList = jdbcTemplate.query(sql, new DataMapper());
 
@@ -56,14 +56,18 @@ public class DataDao {
 
     public void updatebylocationNo(DataDto data){// test 미완료
 
-        String sql = "Update `Data.location` SET data = ? where location_id = ?";
+        String sql = "Update `Data.data` SET data = ? where location_id = ?";
         jdbcTemplate.update(sql,  data.getData(), data.getLocation_id());
 
     }
 
     public void deletebyDataId(int data_id){ // test 미완료
-        String sql = "delete from `Data.location` WHERE data_id = ?";
+        String sql = "delete from `Data.data` WHERE location_id = ?";
         jdbcTemplate.update(sql, data_id);
+    }
+    public void deletebylocationNo(int location_no){ // test 미완료
+        String sql = "delete from `Data.data` WHERE location_no = ?";
+        jdbcTemplate.update(sql, location_no);
     }
 
 }

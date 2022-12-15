@@ -15,4 +15,9 @@ public class DataDto {
     private int location_id;
     private String data;
     private String CreateAt;
+
+    public DataDto(String data, int location_id){
+        this.data = data;
+        this.location_id = location_id;
+    }
 }
